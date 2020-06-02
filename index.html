@@ -54,9 +54,11 @@
     }
     #todo:empty:after {
     content: 'You have nothing to-do!';
+    color: white;
     }
     #completed:empty:after {
     content: 'You have yet to complete any task!';
+    color: white;
     }
    .li-content{
     white-space: nowrap;  
@@ -66,6 +68,14 @@
     span{
         margin: 0 10px;
         width: 50px;
+    }
+
+    /* media query */
+    @media all and (max-width: 431px) and (max-width: 324px){
+        /* span{
+            margin: 5px 0 !important;
+        } */
+
     }
     </style>
     <meta charset="UTF-8">
