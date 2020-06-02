@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+           html, body {
+        max-width: 100%;
+    }
+    body{
+        background-color:rgb(158, 145, 145) !important; 
+    }
+    .row{
+        text-align: center;
+        display: flex;
+        justify-content: center;
+    }
+    .heading{
+        margin: 46px 0px;
+        }
+    h1{
+        color: yellow;
+        text-align: center;
+    }
+    .input{
+        display: flex;
+        justify-content: center !important;
+    }
+    input{
+        width: 100%;
+        height: 70px;
+        margin: 0;
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+        padding: 0 35px;
+        border: none;
+        text-align: center;
+    }
+    input:focus{
+        border: 1px solid #3189e8;
+    }
+   
+    .btn-primary{
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+        width: 20%;
+        border:none;
+    }
+    .btn-primary:focus ,input{
+        outline: none;
+    }
+    h2{
+        text-align: center;
+        margin: 20px 0 !important; 
+
+    }
+    #todo:empty:after {
+    content: 'You have nothing to-do!';
+    }
+    #completed:empty:after {
+    content: 'You have yet to complete any task!';
+    }
+   .li-content{
+    white-space: nowrap;  
+  overflow: hidden;
+  text-overflow: ellipsis;
+   }
+    span{
+        margin: 0 10px;
+        width: 50px;
+    }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- google font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <title>new todo</title>
+</head>
+<body>
+    <section>
+        <div class="container-fluid">
+            <div class="row heading">
+                <div class="col-md-12">
+                    <h1>TODO List</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-8">
+                    <form name="theform">
+                        <div id="input_group" class="input-group input" >
+                            <input id="Task_input" type="text" placeholder="TODO" class="form-control" onkeyup="manage(this)">
+                            <button id="btn" class="btn-primary" onclick="addEvent()" disabled><i class="fa fa-plus" aria-hidden="true"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row" >
+                <div class="col-12">
+                    <h2>TODO Tasks</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-8" >
+                    <ul class="list-group" id="todo"></ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <h2>Complete Tasks</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-8">
+                    <ul class="list-group" id="completed"></ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+ <!-- <script src="./myTodo.js"></script> -->
+ <script>
+    var completedtaskArr = [];
+        // const completedtaskArr = [];
+        var completed = [];
+    var taskArr = [];
+    var remove = [];
+    // completedTask = [];
+    
+    if (!localStorage.task) {
+        localStorage.task = JSON.stringify([]);
+    }
+    // localStorage.completedTask = JSON.stringify(completedtaskArr);
+    if (!localStorage.completedTask) {
+        localStorage.completedTask = JSON.stringify([]);
+    }
+ 
+    updateList();
+    updateComList();
+    
+    // can't accept empty field
+    
+    function manage(txt) {
+        var bt = document.getElementById('btn');
+        if (Task_input.value != '') {
+            bt.disabled = false;
+        }
+       
+    }
+    
+    // on pressing set task input
+    var input = document.getElementById("Task_input");
+    input.addEventListener("keyup", function(event) {
+      if (event.keyCode === 13) {
+       event.preventDefault();
+      }
+    });
+    //................ focus cursor automatically on textbox.....
+    function onloadfun() {
+      document.getElementById("Task_input").focus();
+    };
+    
+    function addEvent(){
+        // get input from input box
+        let input = document.getElementById('Task_input');
+       
+        // get task from localStorage
+        let taskArr =JSON.parse(localStorage.task);
+        console.log(taskArr,"taskArr")
+    
+        // push element into array
+        taskArr.push(input.value);
+    
+        //update local storage 
+        localStorage.task = JSON.stringify(taskArr);
+        console.log(taskArr,'taskArr')
+        input.value='';
+        updateList();
+    }
+    
+    // ..........................   UPDATE BUTTON  .................  
+    
+    function updateList(){
+        
+        // get reference ul(task)
+        let ul = document.getElementById('todo');
+        
+        //get task from localstorage
+        let taskArr =JSON.parse(localStorage.task);
+        let length = taskArr.length-1;
+    
+        let html = '';
+        for(let i=length; i>= 0 ; i--){
+        html +=  '<li class="list-group-item " id=" ' + i + ' "> ' + '<div class="row"><div class="li-content col-sm-12 col-md-6">' + taskArr[i] +  '</div>' + 
+        '<span class="btn btn-success btn-sm col-sm-2 col-md-2"  onclick="completedItem(this);removeItem(this)"><i class="fa fa-check" aria-hidden="true"></i></span>'  +  
+        '<span class="btn btn-danger btn-sm col-sm-2 col-md-2"  onclick="removeItem(this)"><i class="fa fa-trash-o" aria-hidden="true"></i></span></div> </li> <br>'
+        }
+         ul.innerHTML = html;
+        }
+    // ..........................   REMOVE BUTTON  .................
+    
+        function removeItem(span_tag){
+            // object span_tag get its parentElement
+           let index = span_tag.parentElement.parentElement.id;
+    
+           // get the array task 
+           let taskArr =JSON.parse(localStorage.task);      
+    
+        // update the array(ie. remove item from task)
+        var remove = taskArr.splice(index,1);
+          
+        // update localstorage 
+        localStorage.task = JSON.stringify(taskArr);
+        updateList()
+        }
+    // ..........................   COMPLETE BUTTON  .................
+        
+        function completedItem(span_tag) { 
+             // object span_tag get its parentElement
+           let index = span_tag.parentElement.parentElement.id;
+           console.log(index, 'indexnew')
+    
+    // get the array task 
+     taskArr =JSON.parse(localStorage.task);      
+    console.log(taskArr, 'taskArr')
+    
+    // update the array(ie. remove item from task)
+        remove = taskArr.splice(index,1);
+            console.log(remove, 'rem')
+            
+                completedtaskArr.push(remove[0]);
+        //    console.log(); 
+            console.log(completedtaskArr,'completedtaskArr'); 
+    
+            localStorage.completedTask = JSON.stringify(completedtaskArr);
+         completedtaskArr =JSON.parse(localStorage.completedTask);      
+         console.log(completedtaskArr, 'completedtaskArr')
+    
+        
+            updateComList();
+        }
+    //............................... update complete task ............
+    
+        function updateComList(){
+        // get reference ul(task)
+        let ul2 = document.getElementById('completed');
+         
+    
+         //get task from localstorage
+          completedtaskArr =JSON.parse(localStorage.completedTask);
+         let length2 = completedtaskArr.length-1;
+     
+         let html2 = '';
+         for(let i=length2; i>= 0 ; i--){
+         html2 += '<li class="list-group-item " id=" ' + i + ' "> ' + '<div class="row"><div class="li-content col-sm-12 col-md-6">' + completedtaskArr[i] +  '</div>' + 
+        '<span class="btn btn-success btn-sm col-sm-2 col-md-2"  onclick="pushInCompleteTask(this);removeComItem(this)"><i class="fa fa-times" aria-hidden="true"></i></span>'  +  
+        '<span class="btn btn-danger btn-sm col-sm-2 col-md-2"  onclick="removeComItem(this)"><i class="fa fa-trash-o" aria-hidden="true"></i></span><div> </li> <br>'
+        }
+        
+          ul2.innerHTML = html2;
+          console.log(localStorage.completedTask,'localStorage.completedTask');
+        }
+ 
+        //......................... Remove completed task .................
+        function removeComItem(span_tag){
+            // object span_tag get its parentElement
+           let index = span_tag.parentElement.parentElement.id;
+           console.log(index, 'index')
+          // get the array task 
+           let completedtaskArr =JSON.parse(localStorage.completedTask);      
+    
+        // update the array(ie. remove item from task)
+        var remove = completedtaskArr.splice(index,1);
+        console.log(remove, 'remov')
+        // update localstorage 
+        localStorage.completedTask = JSON.stringify(completedtaskArr);
+        console.log(localStorage, 'localStorage')
+         updateComList()
+        }
+ //......................... push incompleted task .................
+ function pushInCompleteTask(span_tag){
+            // object span_tag get its parentElement
+           let index = span_tag.parentElement.parentElement.id;
+           console.log(index, 'index')
+         
+           // get the array task 
+           completedtaskArr =JSON.parse(localStorage.completedTask);      
+           console.log(completedtaskArr, 'completedtaskArr')
+           
+           remove = completedtaskArr.splice(index,1);
+            console.log(remove, 'rem')
+            taskArr.push(remove[0]);
+           console.log(taskArr,'taskArr'); 
+          console.log(taskArr,'taskArr'); 
+      // update the array(ie. remove item from task)
+            localStorage.task = JSON.stringify(taskArr);
+            taskArr =JSON.parse(localStorage.task);      
+         console.log(taskArr, 'taskArr')
+    updateList()
+        }
+    </script>
+</html>
